@@ -5,8 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use App\Http\Resources\RequestResource;
-use App\Http\Resources\ResponseResourceCollection;
 use App\Models\User;
 use Log;
 
@@ -137,6 +135,54 @@ class UserController extends Controller
             return response()->json(['message' => "Digite um e-mail."], 404);
         }
         if($request->password != $request->confirma_senha){
+            return response()->json(['message' => "A confirmação da senha não correspode com a senha!"], 404);
+        }
+    }
+    
+    public function register(Request $request)
+    {
+        $validate = $this->validate_inputs_register($request);
+       
+
+        if(!$validate){
+            $dados = User::register($request);
+            if($dados){
+                Log::info("User ID {$dados->id} created successfully.");
+                return (new RequestResource($dados))->response()->setStatusCode(Response::HTTP_CREATED);
+            }else{
+                Log::info("User ID {$dados->id} problem registering new record.");
+                return response()->json(['message' => 'Problem registering new record.'], 404);
+            }
+        }else{
+            return response()->json(['message' => $validate], 404);
+        }
+    }
+    /**
+     * Validates input
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function validate_inputs_register($request)
+    {
+        $verificar_email = User::where('email', '=', $request->email)->first();
+
+        if ($verificar_email != null) {
+            return response()->json(['message' => "Este e-mail já está cadastrado no sistema!"], 404);
+        }
+        if ($request->password == null) {
+            return response()->json(['message' => "Digite uma senha."], 404);
+        }
+        if ($request->confirma_senha == null) {
+            return response()->json(['message' => "Confirme sua senha."], 404);
+        }
+        if ($request->name == null) {
+            return response()->json(['message' => "Digite um nome."], 404);
+        }
+        if ($request->email == null) {
+            return response()->json(['message' => "Digite um e-mail."], 404);
+        }
+        if ($request->password != $request->confirma_senha) {
             return response()->json(['message' => "A confirmação da senha não correspode com a senha!"], 404);
         }
     }

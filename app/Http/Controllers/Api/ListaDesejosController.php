@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\ListaDesejo;
 use Log;
 
-class ListaDesejos extends Controller
+class ListaDesejosController extends Controller
 {
     /**
      * Display a listing of the resource.
