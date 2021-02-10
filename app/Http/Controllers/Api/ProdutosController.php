@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use App\Models\Produto;
 use Log;
 
@@ -26,21 +27,21 @@ class ProdutosController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, $user_id)
     {
         $validate = $this->validate_inputs($request);
 
         if(!$validate){
-            $dados = Produto::do_save($request);
+            $dados = Produto::do_save($request, $user_id);
             if($dados){
                 Log::info("Produto ID {$dados->id} created successfully.");                
                 return response()->json(['message' => 'Registro incluído com sucesso.'], 201);
             }else{
                 Log::info("Produto ID {$dados->id} problem registering new record.");
-                return response()->json(['message' => 'Problem registering new record.'], 404);
+                return response()->json(['message' => 'Problem registering new record.'], 400);
             }
         }else{
-            return response()->json(['message' => $validate], 404);
+            return response()->json(['message' => $validate], 400);
         }
     }
 
@@ -50,9 +51,9 @@ class ProdutosController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($user_id)
     {
-        $dados = Produto::do_show($id);
+        $dados = Produto::do_show($user_id);
         return response()->json($dados, 200);
     }
 
@@ -63,20 +64,20 @@ class ProdutosController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $user_id, $id)
     {
         $validate = $this->validate_inputs($request, $id);
         if(!$validate){
-            $dados = Produto::do_save($request, $id);
+            $dados = Produto::do_save($request, $user_id, $id);
             if($dados){
                 Log::info("Produto ID {$dados->id} updated successfully.");                
                 return response()->json(['message' => 'Registro atualizado com sucesso.'], 201);
             }else{
                 Log::info("Produto ID {$dados->id} problem changing record.");
-                return response()->json(['message' => 'Problem changing record.'], 404);
+                return response()->json(['message' => 'Problem changing record.'], 400);
             }
         }else{
-            return response()->json(['message' => $validate], 404);
+            return response()->json(['message' => $validate], 400);
         }
     }
 
@@ -86,15 +87,15 @@ class ProdutosController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($user_id,$id)
     {
-        $dados = Produto::do_delete($id);
+        $dados = Produto::do_delete($user_id,$id);
         if($dados){
             Log::info("Produto ID {$dados->id} deleted successfully.");
             return response()->json(['message' => 'Registro deletado com sucesso.'], 200);
         }else{
             Log::info("Produto ID {$dados->id} problem deleting record.");
-            return response()->json(['message' => 'Problem deleting record.'], 404);
+            return response()->json(['message' => 'Problem deleting record.'], 400);
         } 
     }
 
@@ -108,24 +109,31 @@ class ProdutosController extends Controller
     {    
 
         if($request->nome ==  null){
-            return response()->json(['message' => "Digite um nome."], 404);
+            return "Digite um nome.";
         }
 
         if($request->descricao ==  null){
-            return response()->json(['message' => "Digite uma descrição."], 404);
+            return "Digite uma descrição.";
         }
 
         if($request->preco ==  null){
-            return response()->json(['message' => "Digite um preço."], 404);
-        }
-
-        if($request->categoria_id ==  null){
-            return response()->json(['message' => "Digite uma categoria."], 404);
+            return "Digite um preço.";
         }
 
         if($request->photo ==  null){
-            return response()->json(['message' => "Digite uma foto."], 404);
+            return "Digite uma foto.";
         }
         
+    }
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show_detalhes($id)
+    {
+        $dados = Produto::show_by_ID($id);
+        return response()->json($dados, 200);
     }
 }
