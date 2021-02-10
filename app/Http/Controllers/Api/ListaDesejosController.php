@@ -50,9 +50,9 @@ class ListaDesejosController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($user_id)
     {
-        $dados = ListaDesejo::do_show($id);
+        $dados = ListaDesejo::do_show($user_id);
         return response()->json($dados, 200);
     }
 
@@ -74,9 +74,9 @@ class ListaDesejosController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($user_id,$id)
     {
-        $dados = ListaDesejo::do_delete($id);
+        $dados = ListaDesejo::do_delete($user_id,$id);
         if($dados){
             Log::info("ListaDesejo ID {$dados->id} deleted successfully.");
             return response()->json(['message' => 'Registro deletado com sucesso.'], 200);

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
 
 class Produto extends Model
 {
@@ -22,6 +23,7 @@ class Produto extends Model
         'preco',
         'categoria_id',
         'photo',
+        'user_id'
     ];
 
     /**
@@ -34,17 +36,25 @@ class Produto extends Model
 
     public static function do_all()
     {
-        $data = Produto::get();
+        $data = Produto::paginate(12);
         return $data;
     }
 
-    public static function do_show($id)
+    public static function do_show($user_id)
     {
-        $data = Produto::where('id', $id)->get();
+        $data = Produto::
+        select('produtos.id','produtos.nome','produtos.descricao','produtos.preco','produtos.photo', 
+        DB::raw('coalesce(count(lista_desejos.id),0) as curtidas'))
+        
+        ->leftjoin('lista_desejos', 'produtos.id', '=', 'lista_desejos.produto_id')
+
+        ->where('produtos.user_id', $user_id)
+        ->groupBy('produtos.id','produtos.nome','produtos.descricao','produtos.preco','produtos.photo')
+        ->paginate(10);
         return $data;
     }
 
-    public static function do_save($request, $id = null)
+    public static function do_save($request, $user_id, $id = null)
     {
         if ($id) {
             $data = Produto::findOrFail($id);
@@ -57,14 +67,27 @@ class Produto extends Model
         $data->preco        = $request['preco'];
         $data->categoria_id = $request['categoria_id'];
         $data->photo        = $request['photo'];
+        $data->user_id      = $user_id;
         $data->save();
         return $data;
     }
 
-    public static function do_delete($id)
+    public static function do_delete($user_id,$id)
     {
-        $data = Produto::where('id', $id)->firstOrFail();
+        $data = Produto::where('user_id', $user_id)->where('id', $id)->firstOrFail();
         $data->delete();
+        return $data;
+    }
+
+    public static function show_by_ID($id)
+    {
+        $data = Produto::select('produtos.id','produtos.nome','produtos.descricao','produtos.preco','produtos.photo', 
+                DB::raw('coalesce(count(lista_desejos.id),0) as curtidas'))        
+                ->leftjoin('lista_desejos', 'produtos.id', '=', 'lista_desejos.produto_id')        
+                ->where('produtos.id', $id)
+                ->groupBy('produtos.id','produtos.nome','produtos.descricao','produtos.preco','produtos.photo')
+                ->paginate(10);
+
         return $data;
     }
 }

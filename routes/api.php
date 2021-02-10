@@ -33,14 +33,17 @@ Route::group(['middleware' => 'apiJwt'], function ($router) {
     Route::get('categorias/deletar/{id}', 'Api\CategoriasController@destroy')->name('categorias.deletar');
 
     Route::get('produtos', 'Api\ProdutosController@index')->name('produtos');
-    Route::get('produtos/{id}', 'Api\ProdutosController@show')->name('produtos.listar');
-    Route::post('produtos/salvar', 'Api\ProdutosController@store')->name('produtos.salvar');
-    Route::post('produtos/atualizar/{id}', 'Api\ProdutosController@update')->name('produtos.atualizar');
-    Route::get('produtos/deletar/{id}', 'Api\ProdutosController@destroy')->name('produtos.deletar');
+    Route::get('produtos/{user_id}', 'Api\ProdutosController@show')->name('produtos.listar');
+    Route::post('produtos/salvar/{user_id}', 'Api\ProdutosController@store')->name('produtos.salvar');
+    Route::post('produtos/atualizar/{user_id}/{id}', 'Api\ProdutosController@update')->name('produtos.atualizar');
+    Route::get('produtos/deletar/{user_id}/{id}', 'Api\ProdutosController@destroy')->name('produtos.deletar');
+    Route::get('produtos_detalhes/{id}', 'Api\ProdutosController@show_detalhes')->name('produtos.produtos_detalhes');
 
     Route::get('desejos', 'Api\ListaDesejosController@index')->name('desejos');
-    Route::get('desejos/{id}', 'Api\ListaDesejosController@show')->name('desejos.listar');
+    Route::get('desejos/{user_id}', 'Api\ListaDesejosController@show')->name('desejos.listar');
     Route::post('desejos/salvar', 'Api\ListaDesejosController@store')->name('desejos.salvar');
     Route::post('desejos/atualizar/{id}', 'Api\ListaDesejosController@update')->name('desejos.atualizar');
-    Route::get('desejos/deletar/{id}', 'Api\ListaDesejosController@destroy')->name('desejos.deletar');
+    Route::get('desejos/deletar/{user_id}/{id}', 'Api\ListaDesejosController@destroy')->name('desejos.deletar');
 });
+
+

@@ -148,7 +148,7 @@ class UserController extends Controller
             $dados = User::register($request);
             if($dados){
                 Log::info("User ID {$dados->id} created successfully.");
-                return (new RequestResource($dados))->response()->setStatusCode(Response::HTTP_CREATED);
+                return response()->json(['message' => 'Registro incluído com sucesso.'], 201);
             }else{
                 Log::info("User ID {$dados->id} problem registering new record.");
                 return response()->json(['message' => 'Problem registering new record.'], 404);
