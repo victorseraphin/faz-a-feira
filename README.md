@@ -9,7 +9,7 @@
 
 ## Installation Instructions
 
-1. Run `git clone https://github.com/victorseraphin/faz-a-feira.git elastic && cd faz-a-feira`
+1. Run `git clone https://github.com/victorseraphin/faz-a-feira.git faz-a-feira && cd faz-a-feira`
 ### Dentro do Container 
 2. From the projects root run `cp .env.example .env` in Linux
 3. From the projects root run `copy .env.example .env` in Windows
